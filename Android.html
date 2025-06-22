@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice to WhatsApp Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f8f8; text-align: center; padding: 20px; }
+    button { padding: 14px 24px; font-size: 18px; background: #25D366; color: white; border: none; border-radius: 6px; margin: 10px; }
+    #message { margin: 20px auto; width: 90%; max-width: 500px; height: 100px; font-size: 18px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+    #whatsappLink button { background: #128C7E; }
+  </style>
+</head>
+<body>
+  <h2>🎤 Speak or Type Your Order</h2>
+
+  <button onclick="startListening()">🎙️ Speak (Android only)</button><br>
+
+  <textarea id="message" placeholder="Your message will appear here or type manually..."></textarea><br>
+
+  <a id="whatsappLink" href="#" target="_blank" style="display:none;">
+    <button>📤 Send via WhatsApp</button>
+  </a>
+
+  <script>
+    const phone = "919876543210"; // CHANGE this to your target WhatsApp number (no + sign)
+
+    function startListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Voice input not supported on this browser. Please type your message.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'hi-IN'; // or 'en-IN' for English
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        const messageBox = document.getElementById("message");
+        messageBox.value = text;
+        updateWhatsAppLink(text);
+      };
+
+      recognition.onerror = (event) => {
+        alert("Speech error: " + event.error);
+      };
+    }
+
+    function updateWhatsAppLink(text) {
+      const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      const whatsappAnchor = document.getElementById("whatsappLink");
+      whatsappAnchor.href = waLink;
+      whatsappAnchor.style.display = "inline";
+    }
+
+    // Update WhatsApp link when user types manually
+    document.getElementById("message").addEventListener("input", function () {
+      updateWhatsAppLink(this.value);
+    });
+  </script>
+</body>
+</html>
