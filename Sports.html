@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Order to SMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    button { padding: 12px 24px; font-size: 18px; margin: 10px; }
+    #result { margin: 20px; font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h2>🎤 Speak Your Order</h2>
+  <button onclick="startListening()">Start Speaking</button>
+  <div id="result"></div>
+  <a id="smsLink" href="#" style="display:none;">
+    <button>📩 Send SMS</button>
+  </a>
+
+  <script>
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'hi-IN'; // Hindi (or 'en-IN' for English India)
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        document.getElementById("result").innerText = "📝 " + text;
+        const phone = "+917411087774"; // <-- Replace with actual target number
+        const smsLink = `sms:${phone}?body=${encodeURIComponent(text)}`;
+        const smsAnchor = document.getElementById("smsLink");
+        smsAnchor.href = smsLink;
+        smsAnchor.style.display = "inline";
+      };
+
+      recognition.onerror = (e) => {
+        alert("Error: " + e.error);
+      };
+    }
+  </script>
+</body>
+</html>
